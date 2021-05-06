@@ -104,7 +104,12 @@ class Client {
                             case DEFAULT -> protocolHandler = new DefaultProtocolHandler();
                             case HANDSHAKING -> protocolHandler = new HandshakeProtocolHandler();
                             case AUTHENTICATING -> protocolHandler = new AuthenticationProtocolHandler();
-                            case EVENT_LOOP -> protocolHandler = new EventLoopProtocolHandler();
+                            case EVENT_LOOP -> {
+                                switch (SystemInformation.algorithmName) {
+                                    case "bf" -> protocolHandler = new BestFitEventLoopProtocolHandler();
+                                    default -> protocolHandler = new EventLoopProtocolHandler();
+                                }
+                            }
                             case QUITTING -> protocolHandler = new FinalProtocolHandler();
                         }
 
@@ -120,6 +125,15 @@ class Client {
                             nextAction.server.serverType + " " +
                             nextAction.server.serverID + " " +
                             nextAction.jobState.getIndex());
+                    case COMMAND_GETS_CAPABLE -> remoteConnection.writeString("GETS Capable " +
+                            nextAction.job.cpu + " " +
+                            nextAction.job.memory + " " +
+                            nextAction.job.disk);
+                    case COMMAND_GETS_AVAIL -> remoteConnection.writeString("GETS Avail " +
+                            nextAction.job.cpu + " " +
+                            nextAction.job.memory + " " +
+                            nextAction.job.disk);
+                    case PASS -> {;}
                     case QUIT -> System.exit(1);
                 }
             }

@@ -6,8 +6,12 @@ public class Action {
         SEND_MESSAGE,
         SWITCH_STATE,
         COMMAND_SCHD,
+        COMMAND_OK,
         COMMAND_CNTJ,
-        QUIT
+        COMMAND_GETS_CAPABLE,
+        COMMAND_GETS_AVAIL,
+        PASS,
+        QUIT;
     }
 
     public ActionIntent intent;
@@ -29,6 +33,11 @@ public class Action {
     public Action(ActionIntent intent, String message) {
         this.intent = intent;
         this.message = message;
+    }
+
+    public Action(ActionIntent intent, Job job) {
+        this.intent = intent;
+        this.job = job;
     }
 
     public Action(ActionIntent intent, Job job, Server server) {

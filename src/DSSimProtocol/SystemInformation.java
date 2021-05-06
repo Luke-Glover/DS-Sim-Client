@@ -1,6 +1,7 @@
 package DSSimProtocol;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class SystemInformation {
 
@@ -12,11 +13,15 @@ public class SystemInformation {
     public static int port = 50000;
 
     public static ArrayList<Server> serverList = new ArrayList<>();
+    public static ArrayList<Job> pendingJobList = new ArrayList<>();
+
+    public static boolean stable = false;
 
     private SystemInformation() {
     }
 
     /**
+     * @deprecated
      * Adds a server to the internal model of the DSSim system
      *
      * @param serverType The name of the server type
@@ -28,8 +33,30 @@ public class SystemInformation {
      * @param disk       The amount of disk space in MB
      */
     public static void addServer(String serverType, int limit, int bootupTime, float hourlyRate, int core, int mem, int disk) {
+        stable = false;
         Server newServer = new Server(serverType, limit, bootupTime, hourlyRate, core, mem, disk);
         serverList.add(newServer);
+    }
+
+    /**
+     * Adds a server to the internal model of the DSSim system
+     * @param server The server to add
+     */
+    public static void addServer(Server server) {
+        stable = false;
+        if (!serverList.contains(server)) {
+            serverList.add(server);
+        }
+    }
+
+    /**
+     * Adds a job to the internal model of the DSSim system
+     * @param job The job to add
+     */
+    public static void addJob(Job job) {
+        if (!pendingJobList.contains(job)) {
+            pendingJobList.add(job);
+        }
     }
 
     /**
@@ -47,6 +74,13 @@ public class SystemInformation {
             return serverList.get(highestId);
         }
         return null;
+    }
+
+    public static void sortServers() {
+        if (!stable) {
+            serverList.sort(new Server.ServerComparator());
+            stable = true;
+        }
     }
 
 }

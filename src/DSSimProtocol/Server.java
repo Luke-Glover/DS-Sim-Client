@@ -1,13 +1,14 @@
 package DSSimProtocol;
 
+import java.util.Comparator;
+import java.util.Locale;
+
 public class Server {
 
     /**
      * Represents a server that can execute jobs in the simulation. This class does not represent the DSSimServer
      * that runs the simulation.
      */
-
-    public String serverType;
 
     public enum ServerState {
         INACTIVE,
@@ -16,6 +17,22 @@ public class Server {
         ACTIVE,
         UNAVAILABLE
     }
+
+    public static class ServerComparator implements Comparator<Server> {
+
+        @Override
+        public int compare(Server o1, Server o2) {
+            if (o1.core > o2.core) {
+                return 1;
+            } else if (o1.core < o2.core) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+    }
+
+    public String serverType;
     public int serverID;
     public ServerState serverState;
     public int curStartTime;
@@ -24,10 +41,10 @@ public class Server {
     public int disk;
     public int limit;
     public int bootupTime;
-
     public float hourlyRate;
 
     public Server() {
+
     }
 
     /**

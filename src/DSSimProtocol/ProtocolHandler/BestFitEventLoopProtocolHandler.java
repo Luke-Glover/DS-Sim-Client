@@ -5,7 +5,7 @@ import DSSimProtocol.*;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-public class EventLoopProtocolHandler implements ProtocolHandler {
+public class BestFitEventLoopProtocolHandler implements ProtocolHandler {
 
     boolean multipartMessage = false;
     int numberOfParts = 0;
@@ -19,11 +19,11 @@ public class EventLoopProtocolHandler implements ProtocolHandler {
         try {
             XMLParser.parse(SystemInformation.configurationPath);
         } catch (FileNotFoundException e) {
-            java.lang.System.out.println("WARNING: XML file " + SystemInformation.configurationPath + " does not exist");
+            System.out.println("WARNING: XML file " + SystemInformation.configurationPath + " does not exist");
             //java.lang.System.exit(-1); // No using GETS, not a fatal error if the XML file is not found
         }
 
-        if (SystemInformation.debug) System.out.println("USING: all to largest");
+        if (SystemInformation.debug) System.out.println("USING: best fit");
 
         return new Action(Action.ActionIntent.SEND_MESSAGE, "REDY");
     }
@@ -70,23 +70,30 @@ public class EventLoopProtocolHandler implements ProtocolHandler {
                     job.memory = Integer.parseInt(messageParts[5]);
                     job.disk = Integer.parseInt(messageParts[6]);
                     tempJobList.add(job);
-                    return new Action(Action.ActionIntent.COMMAND_GETS_CAPABLE, job);
+                    return new Action(Action.ActionIntent.COMMAND_GETS_AVAIL, job);
                 }
 
                 case "DATA" -> {
-                    multipartMessage = true;
+                    tempServerList.clear();
                     numberOfParts = Integer.parseInt(messageParts[1]);
+                    if (numberOfParts > 0) multipartMessage = true;
                     return new Action(Action.ActionIntent.SEND_MESSAGE, "OK");
                 }
 
                 case "." -> {
-
                     Job tempJob = tempJobList.get(0);
-                    tempJobList.clear();
-                    Server tempServer = tempServerList.get(0);
-                    tempServerList.clear();
 
-                    return new Action(Action.ActionIntent.COMMAND_SCHD, tempJob, tempServer);
+                    if (!tempServerList.isEmpty()) {
+                        tempServerList.sort(new Server.ServerComparator());
+                        Server tempServer = tempServerList.get(0);
+                        tempServerList.clear();
+
+                        tempJobList.clear();
+                        return new Action(Action.ActionIntent.COMMAND_SCHD, tempJob, tempServer);
+
+                    } else {
+                        return new Action(Action.ActionIntent.COMMAND_GETS_CAPABLE, tempJob);
+                    }
                 }
 
                 case "NONE" -> {

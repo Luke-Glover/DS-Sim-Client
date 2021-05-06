@@ -2,7 +2,6 @@
 package DSSimProtocol;
 public class Job {
 
-
     /**
      * Representation of a job as sent by the DSSim server, such as that sent by the JOBN command
      */
@@ -38,6 +37,9 @@ public class Job {
     public int memory;
     public int disk;
 
+    public Job() {
+
+    }
 
     /**
      * Constructs a job object from individual variables
