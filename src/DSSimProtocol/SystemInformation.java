@@ -7,13 +7,28 @@ public class SystemInformation {
     public static boolean verbose = false;
     public static boolean debug = false;
     public static String configurationPath = "ds-system.xml";
-    public static String algorithmName = "allToLargest";
+    public static Algorithms algorithmName = Algorithms.Default;
     public static String remoteAddress = "127.0.0.1";
     public static int port = 50000;
 
     public static ArrayList<Server> serverList = new ArrayList<>();
 
     private SystemInformation() {
+    }
+
+    public enum Algorithms {
+        Default(0), // AllToLargest
+        MinTSC(1);  // Minimum total server cost
+
+        private final int index;
+
+        Algorithms(int index) {
+            this.index = index;
+        }
+
+        public int getIndex() {
+            return index;
+        }
     }
 
     /**

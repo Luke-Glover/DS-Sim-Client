@@ -37,7 +37,7 @@ class Client {
                 }
                 case "-a" -> {
                     try {
-                        SystemInformation.algorithmName = args[++i];
+                        SystemInformation.algorithmName = SystemInformation.Algorithms.valueOf(args[++i]);
                     } catch (ArrayIndexOutOfBoundsException e) {
                         java.lang.System.out.println("FATAL: No algorithm provided with '-a' argument");
                         java.lang.System.exit(-1);
@@ -104,7 +104,16 @@ class Client {
                             case DEFAULT -> protocolHandler = new DefaultProtocolHandler();
                             case HANDSHAKING -> protocolHandler = new HandshakeProtocolHandler();
                             case AUTHENTICATING -> protocolHandler = new AuthenticationProtocolHandler();
-                            case EVENT_LOOP -> protocolHandler = new EventLoopProtocolHandler();
+                            case EVENT_LOOP -> {
+                                switch (SystemInformation.algorithmName) {
+                                    case Default -> protocolHandler = new EventLoopProtocolHandler();
+                                    default -> {
+                                        System.out.println("FATAL: No algorithm Avaliable");
+                                        // deal with no algorithm behaviour here
+                                        // protocolHandler = new FinalProtocolHandler();
+                                    }
+                                }
+                            }
                             case QUITTING -> protocolHandler = new FinalProtocolHandler();
                         }
 
